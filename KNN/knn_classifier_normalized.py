@@ -1,15 +1,21 @@
 import pandas as pd
 import numpy as np
 import operator
+import datetime
+import time
 
 from math import sqrt
+
+# set time stamp for log file
+ts = time.time()
+ts_formatted = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 
 # setup parameters
 training_examples = 2000
 test_examples = 500
 k_start = 1
-k_end = 10
-
+k_end = 3
+logfile = open('knn_normalized_results.log', 'a')
 
 # Read training data
 df_train = pd.read_csv('data/TIMIT/train.mfcccsv', sep=',', nrows=training_examples)
@@ -82,11 +88,15 @@ def k_nearest(k):
 
     recognition_rate = 1 - error_count / len(np_test)
     print(f'Recognition rate for k {k} is {recognition_rate}')
+    logfile.write(f'Recognition rate for k {k} is {recognition_rate}\n')
 
 
 # test different values for k
 print(f'Testing k values from {k_start} to {k_end} for {training_examples} training examples and '
       f'{test_examples} test examples:')
+logfile.write(f'{ts_formatted} Testing k values from {k_start} to {k_end} for {training_examples} training examples '
+              f'{test_examples} test examples:\n')
+
 for i in range(k_start, k_end + 1):
     k_nearest(i)
 
