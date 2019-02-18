@@ -10,8 +10,8 @@ ts = time.time()
 ts_formatted = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 
 # Setup parameters
-training_examples_limit = 10000  # 'None' for training on all examples
-test_examples_limit = 5000  # 'None' for testing on all examples
+training_examples_limit = None  # 'None' for training on all examples
+test_examples_limit = None  # 'None' for testing on all examples
 training_data_file = '../data/TIMIT/train.mfcccsv'
 training_labels_file = '../data/TIMIT/train.targphon'
 test_data_file = '../data/TIMIT/test.mfcccsv'
