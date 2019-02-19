@@ -1,9 +1,3 @@
-'''Trains a simple deep NN on the MNIST dataset.
-
-Gets to 98.40% test accuracy after 20 epochs
-(there is *a lot* of margin for parameter tuning).
-2 seconds per epoch on a K520 GPU.
-'''
 
 from __future__ import print_function
 
@@ -45,6 +39,6 @@ history = model.fit(x_train, y_train,
                     epochs=epochs,
                     verbose=1,
                     validation_data=(x_test, y_test))
-score = model.evaluate(x_test, y_test, verbose=0)
+score = model.evaluate(x_test, y_test, verbose=2)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
