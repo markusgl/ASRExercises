@@ -16,6 +16,7 @@ class Preprocessor:
         self.training_derivative_data_file = "../data/TIMIT/train_d.deltadeltacsv"
         self.class_labels_to_int = {}
 
+
     def read_training_test_data(self):
         # Read training data
         df_train = pd.read_csv(self.training_data_file, sep=',', nrows=self.training_examples_limit)
@@ -65,6 +66,7 @@ class Preprocessor:
         :return:
         """
         np_train, train_labels, np_test, test_labels = self.read_training_test_data()
+        print(np_train[1])
         mult_features = []
         mult_vector = []
         for i, feature in enumerate(np_train):
@@ -160,6 +162,5 @@ class Preprocessor:
 
 if __name__ == '__main__':
     prep = Preprocessor()
-
     prep.extract_with_derivatives()
 
