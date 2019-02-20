@@ -4,5 +4,8 @@
 
 Train | Test | Parameters | P	
 -----|------|----|------|-------
-All|All|5 epochs, 128 batch_size, dropout 0.2, 1 middle layer => size 512, act. = relu| 0.5164
-All|All|5 epochs, 128 batch_size, dropout 0.15, 1 middle layer => size 512, act. = sigmoid| 0.5334
+100000|1000|5 epochs, 128 batch_size, dropout 0.2, 1 middle layer => size 512, act. = relu| 0.678
+100000|1000|5 epochs, 128 batch_size, dropout 0.2, 1 middle layer => size 512, act. = relu| 0.68
+50000|10000|5 epochs, 128 batch_size, dropout 0.2, 1 middle layer => size 512, act. = relu| 0.53
+10000|1000|5 epochs, 128 batch_size, dropout 0.2, 1 middle layer => size 512, act. = relu|0.52
+5000|1000|5 epochs, 128 batch_size, dropout 0.2, 1 middle layer => size 512, act. = relu|0.367

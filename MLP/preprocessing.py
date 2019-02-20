@@ -5,8 +5,9 @@ import numpy as np
 class Preprocessor:
     def __init__(self):
         # Setup parameters
-        self.training_examples_limit = 10000  # 'None' for training on all examples
-        self.test_examples_limit = 5000  # 'None' for testing on all examples
+
+        self.training_examples_limit = None  # 'None' for training on all examples
+        self.test_examples_limit = None  # 'None' for testing on all examples
         self.training_data_file = '../data/TIMIT/train.mfcccsv'
         self.training_labels_file = '../data/TIMIT/train.targcsv'
         self.test_data_file = '../data/TIMIT/test.mfcccsv'
@@ -114,6 +115,47 @@ class Preprocessor:
         delta = np.add(previous, following) / 2
         delta_delta = np.add(np.subtract(previous, 2*current), following)
         return np.array([np.append(current, np.append(delta, delta_delta))])
+
+    def calc_V_vector(self):
+        np_train, train_labels, np_test, test_labels = self.read_training_test_data()
+        np_v_train = np.array()
+        np_v_test = np.array()
+        for i, feature in enumerate(np_train):
+            if (i - 1) < len(np_train) and (i > 0) :
+                np_v_train[i] = (np_train[i - 1] - np_train[i + 1]) / 2
+            elif i == 0
+                np_v_train[i] = (np_train[i] - np_train[i + 1]) / 2
+            elif i == len(np_train)
+                np_v_train[i] = (np_train[i - 1] - np_train[i]) / 2
+        for i, feature in enumerate(np_test):
+            if (i - 1) < len(np_test) and (i > 0) :
+                np_v_test[i] = (np_test[i - 1] - np_test[i + 1]) / 2
+            elif i == 0
+                np_v_test[i] = (np_test[i] - np_test[i + 1]) / 2
+            elif i == len(np_test)
+                np_v_test[i] = (np_test[i - 1] - np_test[i]) / 2
+
+    def calc_A_vector(self):
+        np_train, train_labels, np_test, test_labels = self.read_training_test_data()
+        np_a_train = np.array()
+        np_a_test = np.array()
+        for i, feature in enumerate(np_train):
+            if (i - 1) < len(np_train) and (i > 0) :
+                np_v_train[i] = np_train[i - 1] - 2 * np_train[i] + np_train[i + 1]
+            elif i == 0
+                np_v_train[i] = np_train[i] - 2 * np_train[i] + np_train[i + 1]
+            elif i == len(np_train)
+                np_v_train[i] = np_train[i - 1] - 2 * np_train[i] + np_train[i]
+        for i, feature in enumerate(np_test):
+            if (i - 1) < len(np_test) and (i > 0) :
+                np_a_test[i] = np_test[i - 1] - 2 * np_test[i] + np_test[i + 1]
+            elif i == 0
+                np_a_test[i] = np_test[i] - 2 * np_test[i] + np_test[i + 1]
+            elif i == len(np_test)
+                np_a_test[i] = np_test[i - 1] - 2 * np_test[i] + np_test[i]
+
+    def merge_feature_vectors(self):
+        
 
 
 if __name__ == '__main__':

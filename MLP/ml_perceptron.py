@@ -6,7 +6,7 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.optimizers import RMSprop
 
-from MLP.preprocessing import Preprocessor
+from preprocessing import Preprocessor
 
 batch_size = 128
 num_classes = 40
