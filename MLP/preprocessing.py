@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+
 class Preprocessor:
     def __init__(self):
         # Setup parameters
@@ -35,7 +36,6 @@ class Preprocessor:
 
         return (np_train, train_labels), (np_test, test_labels)
 
-
     def neighbor_n_features(self, feature_vector, n):
         firsts = np.array([feature_vector[0], feature_vector[0]])
         lasts  = np.array([feature_vector[len(feature_vector)-1], feature_vector[len(feature_vector)-1]])
@@ -59,7 +59,40 @@ class Preprocessor:
         #n_labels_test = self.neighbor_n_features(test_labels, neighbors_amount)
         return (neighbors_samples, train_labels), (neighbors_test, test_labels)
 
-    
+    def extract_multi_feature_vectors(self):
+        """
+        Approach by Markus
+        :return:
+        """
+        np_train, train_labels, np_test, test_labels = self.read_training_test_data()
+        mult_features = []
+        mult_vector = []
+        for i, feature in enumerate(np_train):
+            if i == 0:
+                mult_vector = np.vstack((np_train[i:i + 1], np_train[i:i + 1], np_train[i:i + 1],
+                                         np_train[i + 1:i + 2], np_train[i + 2:i + 3]))
+            elif i == 1:
+                mult_vector = np.vstack((np_train[i:i + 1], np_train[:i], np_train[i:i + 1],
+                                         np_train[i + 1:i + 2], np_train[i + 2:i + 3]))
+            elif i == len(np_train) - 2:
+                mult_vector = np.vstack(
+                    (np_train[i - 2:i - 1], np_train[i - 1:i], np_train[i:i + 1], np_train[i + 1:i + 2],
+                     np_train[i:i + 1]))
+            elif i == len(np_train) - 1:  # last element
+                mult_vector = np.vstack(
+                    (np_train[i - 2:i - 1], np_train[i - 1:i], np_train[i:i + 1], np_train[i:i + 1],
+                     np_train[i:i + 1]))
+            elif 2 < i < len(np_train)-3:
+                mult_vector = np_train[i - 2:i + 3]
+
+            size = mult_vector.shape[0] * mult_vector.shape[1]
+            reshaped_vector = np.reshape(mult_vector, size)
+            mult_features.append(reshaped_vector)
+
+        return (mult_features, train_labels), (np_test, test_labels)
+
+
 if __name__ == '__main__':
     prep = Preprocessor()
     prep.extract_with_neighbor_features()
+
