@@ -7,12 +7,13 @@ class Preprocessor:
         # Setup parameters
 
         self.training_examples_limit = 100000  # 'None' for training on all examples
-        self.test_examples_limit = 10000  # 'None' for testing on all examples
+        self.test_examples_limit = 50000  # 'None' for testing on all examples
         self.training_data_file = '../data/TIMIT/train.mfcccsv'
         self.training_labels_file = '../data/TIMIT/train.targcsv'
         self.test_data_file = '../data/TIMIT/test.mfcccsv'
         self.test_labels_file = '../data/TIMIT/test.targcsv'
-
+        self.test_derivative_data_file = "../data/TIMIT/test_d.deltadeltacsv"
+        self.training_derivative_data_file = "../data/TIMIT/train_d.deltadeltacsv"
         self.class_labels_to_int = {}
 
     def read_training_test_data(self):
@@ -94,7 +95,10 @@ class Preprocessor:
         np_train, train_labels, np_test, test_labels = self.read_training_test_data()
         derivatives_training = self.get_dimensional_vector(np_train)
         derivatives_test     = self.get_dimensional_vector(np_test)
-
+        dataframe_training = pd.DataFrame.from_records(derivatives_training)
+        dataframe_test = pd.DataFrame.from_records(derivatives_test)
+        dataframe_test.to_csv(self.test_derivative_data_file, encoding='utf-8', index=False)
+        dataframe_training.to_csv(self.training_derivative_data_file, encoding='utf-8', index=False)
         np.set_printoptions(threshold=np.nan)
         return (derivatives_training, train_labels), (derivatives_test, test_labels)
 
@@ -154,12 +158,8 @@ class Preprocessor:
             elif i == len(np_test):
                 np_a_test[i] = np_test[i - 1] - 2 * np_test[i] + np_test[i]
 
-    def merge_feature_vectors(self):
-        return None
-
-
 if __name__ == '__main__':
     prep = Preprocessor()
 
-    prep.extract_with_neighbor_features()
+    prep.extract_with_derivatives()
 
