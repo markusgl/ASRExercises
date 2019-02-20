@@ -31,7 +31,6 @@ print(x_test.shape[0], 'test samples')
 
 model = Sequential()
 if MODE == "neighbors":
-    model.add(Dense(512, activation='relu', ))
     model.add(LSTM(hidden_size, input_shape=(x_train[0].shape[0], x_train[0].shape[1],), return_sequences=True))
 else:
     model.add(LSTM(hidden_size, input_shape=(x_train.shape[1],), return_sequences=True))
