@@ -5,8 +5,8 @@ import numpy as np
 class Preprocessor:
     def __init__(self):
         # Setup parameters
-        self.training_examples_limit = 100000  # 'None' for training on all examples
-        self.test_examples_limit = 1000  # 'None' for testing on all examples
+        self.training_examples_limit = 10000  # 'None' for training on all examples
+        self.test_examples_limit = 5000  # 'None' for testing on all examples
         self.training_data_file = '../data/TIMIT/train.mfcccsv'
         self.training_labels_file = '../data/TIMIT/train.targcsv'
         self.test_data_file = '../data/TIMIT/test.mfcccsv'
@@ -54,9 +54,7 @@ class Preprocessor:
         np_train, train_labels, np_test, test_labels = self.read_training_test_data()
         neighbors_amount = 5
         neighbors_samples = self.neighbor_n_features(np_train, neighbors_amount)
-        #n_labels_train = self.neighbor_n_features(train_labels, neighbors_amount)
         neighbors_test = self.neighbor_n_features(np_test, neighbors_amount)
-        #n_labels_test = self.neighbor_n_features(test_labels, neighbors_amount)
         return (neighbors_samples, train_labels), (neighbors_test, test_labels)
 
     def extract_multi_feature_vectors(self):
@@ -90,9 +88,36 @@ class Preprocessor:
             mult_features.append(reshaped_vector)
 
         return (mult_features, train_labels), (np_test, test_labels)
+    
+    def extract_with_derivatives(self): 
+        np_train, train_labels, np_test, test_labels = self.read_training_test_data()
+        derivatives_training = self.get_dimensional_vector(np_train)
+        derivatives_test     = self.get_dimensional_vector(np_test)
+
+        np.set_printoptions(threshold=np.nan)
+        return (derivatives_training, train_labels), (derivatives_test, test_labels)
+
+    def get_dimensional_vector(self, feature_vector):
+        first = np.array([feature_vector[0]])
+        last  = np.array([feature_vector[len(feature_vector)-1]])
+        copy_neighbors = np.append(first, feature_vector, axis=0)
+        copy_neighbors = np.append(copy_neighbors, last, axis=0)
+        neighbors = np.array([])
+        for i, value in enumerate(feature_vector):
+            if(len(neighbors)): #if it is not empty#
+                neighbors = np.append(neighbors, self.calculate_derivatives(copy_neighbors[i], copy_neighbors[i+1], copy_neighbors[i+2]), axis=0)
+            else: 
+                neighbors = self.calculate_derivatives(copy_neighbors[i], copy_neighbors[i+1], copy_neighbors[i+2])
+        return neighbors
+
+    def calculate_derivatives(self, previous, current, following):
+        delta = np.add(previous, following) / 2
+        delta_delta = np.add(np.subtract(previous, 2*current), following)
+        return np.array([np.append(current, np.append(delta, delta_delta))])
 
 
 if __name__ == '__main__':
     prep = Preprocessor()
+
     prep.extract_with_neighbor_features()
 
