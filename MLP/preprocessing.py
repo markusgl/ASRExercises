@@ -6,8 +6,8 @@ class Preprocessor:
     def __init__(self):
         # Setup parameters
 
-        self.training_examples_limit = 100000  # 'None' for training on all examples
-        self.test_examples_limit = 50000  # 'None' for testing on all examples
+        self.training_examples_limit = 5000  # 'None' for training on all examples
+        self.test_examples_limit = 1000  # 'None' for testing on all examples
         self.training_data_file = '../data/TIMIT/train.mfcccsv'
         self.training_labels_file = '../data/TIMIT/train.targcsv'
         self.test_data_file = '../data/TIMIT/test.mfcccsv'
@@ -118,7 +118,7 @@ class Preprocessor:
         return neighbors
 
     def calculate_derivatives(self, previous, current, following):
-        delta = np.add(previous, following) / 2
+        delta = np.subtract(following, previous) / 2
         delta_delta = np.add(np.subtract(previous, 2*current), following)
         return np.array([np.append(current, np.append(delta, delta_delta))])
 
