@@ -26,7 +26,7 @@ elif MODE == "derivatives":
     x_test = x_test.reshape(x_test.shape[0], x_test.shape[1])
 print(x_train.shape[0], 'train samples')
 print(x_test.shape[0], 'test samples')
-
+print(x_train.shape[1], 'features')
 
 model = Sequential()
 if MODE == "neighbors":
