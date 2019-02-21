@@ -11,29 +11,52 @@ ts = time.time()
 ts_formatted = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
 
 # setup parameters
-training_examples = 2000
-test_examples = 100
+training_examples = 5000
+test_examples = 1000
 k_start = 1
-k_end = 2
+k_end = 25
 logfile = open('knn_results.log', 'a')
+derivatives = True
 
-# Read training data
-df_train = pd.read_csv('data/TIMIT/train.mfcccsv', sep=',', nrows=training_examples)
+df_train = pd.read_csv('../data/TIMIT/train.mfcccsv', sep=',', nrows=training_examples)
 np_train = df_train.values
 
-with open('data/TIMIT/train.targphon', 'r') as f:
+with open('../data/TIMIT/train.targphon', 'r') as f:
     train_labels = []
     for row in f.readlines():
         train_labels.append(row)
 
 # Read test data
-df_test = pd.read_csv('data/TIMIT/test.mfcccsv', sep=',', nrows=test_examples)
+df_test = pd.read_csv('../data/TIMIT/test.mfcccsv', sep=',', nrows=test_examples)
 np_test = df_test.values
 
-with open('data/TIMIT/test.targphon', 'r') as f:
+with open('../data/TIMIT/test.targphon', 'r') as f:
     test_labels = []
     for row in f.readlines():
         test_labels.append(row)
+
+def extract_with_derivatives(): 
+    derivatives_training = get_dimensional_vector(np_train)
+    derivatives_test     = get_dimensional_vector(np_test)
+    return (derivatives_training, train_labels), (derivatives_test, test_labels)
+
+def get_dimensional_vector(feature_vector):
+    first = np.array([feature_vector[0]])
+    last  = np.array([feature_vector[len(feature_vector)-1]])
+    copy_neighbors = np.append(first, feature_vector, axis=0)
+    copy_neighbors = np.append(copy_neighbors, last, axis=0)
+    neighbors = np.array([])
+    for i, value in enumerate(feature_vector):
+        if(len(neighbors)): #if it is not empty#
+            neighbors = np.append(neighbors, calculate_derivatives(copy_neighbors[i], copy_neighbors[i+1], copy_neighbors[i+2]), axis=0)
+        else: 
+            neighbors = calculate_derivatives(copy_neighbors[i], copy_neighbors[i+1], copy_neighbors[i+2])
+    return neighbors
+
+def calculate_derivatives(previous, current, following):
+    delta = np.subtract(following, previous) / 2
+    delta_delta = np.add(np.subtract(previous, 2*current), following)
+    return np.array([np.append(current, np.append(delta, delta_delta))])
 
 
 def k_nearest(k):
@@ -77,6 +100,9 @@ def k_nearest(k):
     print(f'Recognition rate for k {k} is {recognition_rate}')
     logfile.write(f'Recognition rate for k {k} is {recognition_rate}\n')
 
+
+if(derivatives):
+    (np_train, train_labels), (np_test, test_labels) = extract_with_derivatives()
 
 # test different values for k
 print(f'Testing k values from {k_start} to {k_end} for {training_examples} training examples '

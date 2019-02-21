@@ -17,6 +17,7 @@ training_labels_file = '../data/TIMIT/train.targphon'
 test_data_file = '../data/TIMIT/test.mfcccsv'
 test_labels_file = '../data/TIMIT/test.targphon'
 logfile = open('gaussian_classifier_results.log', 'a')
+derivatives = True
 
 # Read training data
 df_train = pd.read_csv(training_data_file, sep=',', nrows=training_examples_limit)
@@ -37,7 +38,31 @@ with open(test_labels_file, 'r') as f:
     for row in f.readlines():
         test_labels.append(row)
 
+def extract_with_derivatives(): 
+    derivatives_training = get_dimensional_vector(np_train)
+    derivatives_test     = get_dimensional_vector(np_test)
+    return (derivatives_training, train_labels), (derivatives_test, test_labels)
 
+def get_dimensional_vector(feature_vector):
+    first = np.array([feature_vector[0]])
+    last  = np.array([feature_vector[len(feature_vector)-1]])
+    copy_neighbors = np.append(first, feature_vector, axis=0)
+    copy_neighbors = np.append(copy_neighbors, last, axis=0)
+    neighbors = np.array([])
+    for i, value in enumerate(feature_vector):
+        if(len(neighbors)): #if it is not empty#
+            neighbors = np.append(neighbors, calculate_derivatives(copy_neighbors[i], copy_neighbors[i+1], copy_neighbors[i+2]), axis=0)
+        else: 
+            neighbors = calculate_derivatives(copy_neighbors[i], copy_neighbors[i+1], copy_neighbors[i+2])
+    return neighbors
+
+def calculate_derivatives(previous, current, following):
+    delta = np.subtract(following, previous) / 2
+    delta_delta = np.add(np.subtract(previous, 2*current), following)
+    return np.array([np.append(current, np.append(delta, delta_delta))])
+
+if(derivatives):
+    (np_train, train_labels), (np_test, test_labels) = extract_with_derivatives()
 # Assign each training example to its class label
 class_features = {}
 class_example_counts = {}
