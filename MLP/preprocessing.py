@@ -162,5 +162,4 @@ class Preprocessor:
 
 if __name__ == '__main__':
     prep = Preprocessor()
-    #prep.extract_with_derivatives()
-    (x_train, y_train), (x_test, y_test) = prep.extract_features()
+    prep.extract_with_derivatives()

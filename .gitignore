@@ -110,3 +110,5 @@ setup.py
 KNN/data
 blub.py
 /data
+
+*.hdf5

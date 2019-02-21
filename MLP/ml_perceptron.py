@@ -6,12 +6,12 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.optimizers import RMSprop
 from keras.callbacks import TensorBoard, ModelCheckpoint, EarlyStopping
-
+from sklearn.metrics import classification_report, confusion_matrix
 from MLP.preprocessing import Preprocessor
 
 batch_size = 128
 num_classes = 40
-epochs = 5
+epochs = 2
 MODE = "simple"
 
 # the data, split between train and test sets
@@ -48,7 +48,7 @@ model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(),
               metrics=['accuracy'])
 
-checkpointer = ModelCheckpoint(filepath='models/sentiment_sequential.hdf5', verbose=1, save_best_only=True)
+checkpointer = ModelCheckpoint(filepath='sentiment_sequential.hdf5', verbose=1, save_best_only=True)
 earlyStopper = EarlyStopping(monitor='val_loss', min_delta=0, patience=7, verbose=0, mode='auto')
 
 history = model.fit(x_train, y_train,
@@ -60,3 +60,7 @@ history = model.fit(x_train, y_train,
 score = model.evaluate(x_test, y_test, verbose=2)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+
+y_pred = model.predict(x_test)
+matrix = confusion_matrix(y_test.argmax(axis=1), y_pred.argmax(axis=1))
+print(matrix)
