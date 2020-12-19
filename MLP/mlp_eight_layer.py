@@ -1,11 +1,10 @@
 
 from __future__ import print_function
 
-import keras
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Flatten
-from keras.optimizers import RMSprop, SGD
-from keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, Flatten
+from tensorflow.keras.optimizers import RMSprop, SGD
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 
 from MLP.preprocessing import Preprocessor
 

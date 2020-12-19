@@ -18,28 +18,33 @@ k_end = 25
 logfile = open('knn_normalized_results.log', 'a')
 derivatives = True
 
-def extract_with_derivatives(): 
+
+def extract_with_derivatives():
     derivatives_training = get_dimensional_vector(np_train)
-    derivatives_test     = get_dimensional_vector(np_test)
+    derivatives_test = get_dimensional_vector(np_test)
     return (derivatives_training, train_labels), (derivatives_test, test_labels)
+
 
 def get_dimensional_vector(feature_vector):
     first = np.array([feature_vector[0]])
-    last  = np.array([feature_vector[len(feature_vector)-1]])
+    last = np.array([feature_vector[len(feature_vector) - 1]])
     copy_neighbors = np.append(first, feature_vector, axis=0)
     copy_neighbors = np.append(copy_neighbors, last, axis=0)
     neighbors = np.array([])
     for i, value in enumerate(feature_vector):
-        if(len(neighbors)): #if it is not empty#
-            neighbors = np.append(neighbors, calculate_derivatives(copy_neighbors[i], copy_neighbors[i+1], copy_neighbors[i+2]), axis=0)
-        else: 
-            neighbors = calculate_derivatives(copy_neighbors[i], copy_neighbors[i+1], copy_neighbors[i+2])
+        if (len(neighbors)):  # if it is not empty#
+            neighbors = np.append(neighbors, calculate_derivatives(copy_neighbors[i], copy_neighbors[i + 1],
+                                                                   copy_neighbors[i + 2]), axis=0)
+        else:
+            neighbors = calculate_derivatives(copy_neighbors[i], copy_neighbors[i + 1], copy_neighbors[i + 2])
     return neighbors
+
 
 def calculate_derivatives(previous, current, following):
     delta = np.subtract(following, previous) / 2
-    delta_delta = np.add(np.subtract(previous, 2*current), following)
+    delta_delta = np.add(np.subtract(previous, 2 * current), following)
     return np.array([np.append(current, np.append(delta, delta_delta))])
+
 
 # Read training data
 df_train = pd.read_csv('../data/TIMIT/train.mfcccsv', sep=',', nrows=training_examples)
@@ -59,7 +64,7 @@ with open('../data/TIMIT/test.targphon', 'r') as f:
     for row in f.readlines():
         test_labels.append(row)
 
-if(derivatives):
+if (derivatives):
     (np_train, train_labels), (np_test, test_labels) = extract_with_derivatives()
 
 # calculate means and standard deviation for train and test features
@@ -106,14 +111,13 @@ def k_nearest(k):
         test_label = test_labels[i]
         if not target_label == test_label:
             error_count += 1
-        #print(f'Target label: {target_label}')
-        #print(f'Actual label: {test_label}')
-        #print(f'Shortest distance: {shortest_distance}')
+        # print(f'Target label: {target_label}')
+        # print(f'Actual label: {test_label}')
+        # print(f'Shortest distance: {shortest_distance}')
 
     recognition_rate = 1 - error_count / len(np_test)
     print(f'Recognition rate for k {k} is {recognition_rate}')
     logfile.write(f'Recognition rate for k {k} is {recognition_rate}\n')
-
 
 
 # test different values for k
@@ -124,4 +128,3 @@ logfile.write(f'{ts_formatted} Testing k values from {k_start} to {k_end} for {t
 
 for i in range(k_start, k_end + 1):
     k_nearest(i)
-
